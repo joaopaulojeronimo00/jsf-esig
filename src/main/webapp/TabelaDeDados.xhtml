@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<ui:composition template="/WEB-INF/template/Layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="titulo">Tarefas</ui:define>
+
+
+	<ui:define name="corpo">
+
+		<f:metadata>
+			<f:viewAction action="#{consultaTarefasBean.findAll}" />
+		</f:metadata>
+
+		<h:form id="frm">
+
+			<p:messages showDetail="false" showSummary="true" redisplay="true"
+				autoUpdate="true" />
+
+			<p:toolbar id="toolbar">
+				<f:facet name="left">
+					<p:inputText placeholder="Digite aqui um termo para pesquisa..."
+						size="30" value="#{consultaTarefasBean.termoPesquisa}" />
+
+					<p:commandButton value="Pesquisar"
+						action="#{consultaTarefasBean.findByName}"
+						update="tarefaDataTable" />
+
+					<span class="ui-separator"> <span
+						class="ui-icon ui-icon-grip-dotted-vertical" />
+					</span>
+
+					<p:commandButton value="Nova"
+						onclick="PF('novaTarefaDialog').show()" />
+
+					<span class="ui-separator"> <span
+						class="ui-icon ui-icon-grip-dotted-vertical" />
+					</span>
+
+					<p:commandButton value="Editar"
+						onclick="PF('editarIdWidgetVar').show()" />
+
+					<p:commandButton value="Excluir"
+						onclick="PF('excluirWidgetVar').show()" />
+
+					<p:commandButton value="Concluir"
+						onclick="PF('concluirWidgetVar').show()" />
+
+				</f:facet>
+			</p:toolbar>
+
+			<p:dataTable id="tarefaDataTable"
+				value="#{consultaTarefasBean.tarefas}" var="tarefa" border="1"
+				cellspacing="0" cellpadding="2" sortBy="#{tarefa.id}">
+
+				<f:facet name="header">
+			Relação de Tarefas
+			</f:facet>
+				<p:column>
+
+					<f:facet name="header">Id</f:facet>
+					<h:outputText value="#{tarefa.id}" />
+				</p:column>
+
+				<p:column>
+					<f:facet name="header">Título</f:facet>
+					<h:outputText value="#{tarefa.titulo}" />
+				</p:column>
+
+				<p:column>
+					<f:facet name="header">Responsavel</f:facet>
+					<h:outputText value="#{tarefa.concluido}" />
+				</p:column>
+
+			</p:dataTable>
+
+			<p:dialog id="excluirDialog" header="Excluir"
+				widgetVar="excluirWidgetVar" modal="true" resizable="false"
+				closeOnEscape="true">
+				<p:outputLabel value="Insira o id da tarefa a ser excluída"
+					for="excluir" />
+				<p:inputText id="excluir" isize="12" cols="40" rows="3"
+					value="#{consultaTarefasBean.id}" label="Excluir">
+				</p:inputText>
+
+				<p:commandButton value="Confirmar"
+					action="#{consultaTarefasBean.excluir}"
+					oncomplete="PF('excluirWidgetVar').hide()" update="tarefaDataTable"
+					process="@this" />
+
+			</p:dialog>
+
+			<p:dialog id="concluirDialog" header="concluir"
+				widgetVar="concluirWidgetVar" modal="true" resizable="false"
+				closeOnEscape="true">
+				<p:outputLabel value="Insira o id da tarefa a ser concluída"
+					for="concluir" />
+				<p:inputText id="concluir" isize="12" cols="40" rows="3"
+					label="Concluir" value="#{consultaTarefasBean.id}">
+				</p:inputText>
+
+				<p:commandButton value="Confirmar"
+					actionListener="#{consultaTarefasBean.concluir}"
+					oncomplete="PF('concluirWidgetVar').hide()"
+					update="tarefaDataTable tarefaPanelGrid concluirDialog" />
+			</p:dialog>
+
+			<p:dialog id="editarDialog" header="editar"
+				widgetVar="editarIdWidgetVar" modal="true" resizable="false"
+				closeOnEscape="true">
+				<p:outputLabel value="Insira o id da tarefa a ser editada"
+					for="editarId" />
+				<p:inputText id="editarId" isize="12" cols="40" rows="3"
+					value="#{consultaTarefasBean.id}" label="Editar">
+				</p:inputText>
+
+				<p:commandButton value="Confirmar"
+					action="#{consultaTarefasBean.prepararEdicao}"
+					onclick="PF('editarTarefaWidgetVar').show()"
+					oncomplete="PF('editarIdWidgetVar').hide()"
+					update="tarefaDataTable editarTarefaPanelGrid concluirDialog"
+					process="@this">
+					<p:resetInput target="editarTarefaDialog" />
+				</p:commandButton>
+
+			</p:dialog>
+
+
+
+			<p:dialog id="tarefaDialog" header="Nova Tarefa"
+				widgetVar="novaTarefaDialog" modal="true" resizable="false"
+				closeOnEscape="true">
+
+				<p:messages id="cadastroMessages" />
+
+				<h:panelGrid columns="2" id="tarefaPanelGrid">
+
+					<p:outputLabel value="Prioridade" for="prioridade" />
+					<p:selectOneRadio id="prioridade"
+						value="#{consultaTarefasBean.tarefa.prioridade}"
+						label="Prioridade">
+						<f:selectItems value="#{consultaTarefasBean.prioridades}"
+							var="prioridade" itemValue="#{prioridade}" />
+					</p:selectOneRadio>
+
+					<p:outputLabel value="Titulo" for="titulo" />
+					<p:inputText id="titulo" size="60"
+						value="#{consultaTarefasBean.tarefa.titulo}" label="Titulo" />
+
+					<p:outputLabel value="Responsável" for="responsavel" />
+					<p:inputText id="responsavel" size="60"
+						value="#{consultaTarefasBean.tarefa.responsavel}"
+						label="Responsável" />
+
+					<p:outputLabel value="Descrição" for="descrição" />
+					<p:inputText id="descrição" isize="12" cols="40" rows="3"
+						value="#{consultaTarefasBean.tarefa.descricao}" label="Descrição">
+					</p:inputText>
+
+					<p:outputLabel value="Deadline" for="deadline" />
+					<p:inputText id="deadline" size="12"
+						value="#{consultaTarefasBean.tarefa.deadline}" label="Deadline">
+						<f:convertDateTime pattern="dd/MM/yyyy"
+							timeZone="America/Sao_Paulo" />
+					</p:inputText>
+
+					<p:commandButton value="Cadastrar Tarefa"
+						action="#{consultaTarefasBean.salvar}"
+						oncomplete="if (!args.validationFailed) PF('novaTarefaDialog').hide()"
+						update="tarefaPanelGrid cadastroMessages" process="tarefaDialog" />
+
+				</h:panelGrid>
+
+			</p:dialog>
+
+			<p:dialog id="editarTarefaDialog" header="Editar Tarefa"
+				widgetVar="editarTarefaWidgetVar" modal="true" resizable="false"
+				closeOnEscape="true">
+
+				<h:panelGrid columns="2" id="editarTarefaPanelGrid">
+
+					<p:outputLabel value="Prioridade" for="prioridadeEditar" />
+					<p:selectOneRadio id="prioridadeEditar"
+						value="#{consultaTarefasBean.tarefa.prioridade}"
+						label="Prioridade">
+						<f:selectItems value="#{consultaTarefasBean.prioridades}"
+							var="prioridade" itemValue="#{prioridade}" />
+					</p:selectOneRadio>
+
+					<p:outputLabel value="Titulo" for="tituloEditar" />
+					<p:inputText id="tituloEditar" size="60"
+						value="#{consultaTarefasBean.tarefa.titulo}" label="Titulo" />
+
+					<p:outputLabel value="Responsável" for="responsavelEditar" />
+					<p:inputText id="responsavelEditar" size="60"
+						value="#{consultaTarefasBean.tarefa.responsavel}"
+						label="Responsável" />
+
+					<p:outputLabel value="Descrição" for="descriçãoEditar" />
+					<p:inputText id="descriçãoEditar" isize="12" cols="40" rows="3"
+						value="#{consultaTarefasBean.tarefa.descricao}" label="Descrição">
+					</p:inputText>
+
+					<p:outputLabel value="Deadline" for="deadlineEditar" />
+					<p:inputText id="deadlineEditar" size="12"
+						value="#{consultaTarefasBean.tarefa.deadline}" label="Deadline">
+						<f:convertDateTime pattern="dd/MM/yyyy"
+							timeZone="America/Sao_Paulo" />
+					</p:inputText>
+
+					<p:commandButton value="Editar Tarefa"
+						action="#{consultaTarefasBean.editar}"
+						oncomplete="if (!args.validationFailed) PF('editarTarefaWidgetVar').hide()"
+						update="editarTarefaPanelGrid cadastroMessages"
+						process="editarTarefaDialog" />
+
+				</h:panelGrid>
+
+			</p:dialog>
+
+
+
+
+
+		</h:form>
+	</ui:define>
+</ui:composition>
