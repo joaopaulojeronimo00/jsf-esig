@@ -8,13 +8,11 @@ import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
-import javax.faces.convert.Converter;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
 import org.primefaces.context.RequestContext;
 
-import converters.TarefaConverter;
 import entities.Tarefa;
 import entities.enums.Prioridade;
 import repositories.TarefaRepository;
@@ -37,9 +35,7 @@ public class ConsultaTarefasBean implements Serializable {
 	private Tarefa aux = new Tarefa();
 
 	private Long id;
-
-	private Converter converter;
-
+	
 	public List<Tarefa> getTarefas() {
 		return tarefas;
 	}
@@ -135,7 +131,7 @@ public class ConsultaTarefasBean implements Serializable {
 			et.begin();
 			CadastroTarefas cadastroTarefas = new CadastroTarefas(new TarefaRepository(em));
 			System.out.println("1");
-			cadastroTarefas.excluir(4l);
+			cadastroTarefas.excluir(id);
 			System.out.println("2");
 
 			context.addMessage(null, new FacesMessage("Cadastro excluído com sucesso!"));
@@ -161,7 +157,7 @@ public class ConsultaTarefasBean implements Serializable {
 
 		CadastroTarefas cadastroTarefas = new CadastroTarefas(new TarefaRepository(em));
 		System.out.println(id);
-		cadastroTarefas.concluir(5l);
+		cadastroTarefas.concluir(id);
 		
 		id = null;
 
@@ -192,7 +188,7 @@ public class ConsultaTarefasBean implements Serializable {
 		EntityManager em = JpaUtil.getEntityManager();
 		TarefaRepository tr = new TarefaRepository(em);
 
-		tarefa = tr.findById(5l);
+		tarefa = tr.findById(id);
 		em.close();
 		id = null;
 		}

@@ -80,6 +80,7 @@
 			<p:dialog id="excluirDialog" header="Excluir"
 				widgetVar="excluirWidgetVar" modal="true" resizable="false"
 				closeOnEscape="true">
+
 				<p:outputLabel value="Insira o id da tarefa a ser excluída"
 					for="excluir" />
 				<p:inputText id="excluir" isize="12" cols="40" rows="3"
@@ -88,8 +89,8 @@
 
 				<p:commandButton value="Confirmar"
 					action="#{consultaTarefasBean.excluir}"
-					oncomplete="PF('excluirWidgetVar').hide()" update="tarefaDataTable"
-					process="@this" />
+					oncomplete="PF('excluirWidgetVar').hide()"
+					update="tarefaDataTable" process="@this" />
 
 			</p:dialog>
 
@@ -106,7 +107,9 @@
 					actionListener="#{consultaTarefasBean.concluir}"
 					oncomplete="PF('concluirWidgetVar').hide()"
 					update="tarefaDataTable tarefaPanelGrid concluirDialog" />
+
 			</p:dialog>
+
 
 			<p:dialog id="editarDialog" header="editar"
 				widgetVar="editarIdWidgetVar" modal="true" resizable="false"
@@ -121,7 +124,7 @@
 					action="#{consultaTarefasBean.prepararEdicao}"
 					onclick="PF('editarTarefaWidgetVar').show()"
 					oncomplete="PF('editarIdWidgetVar').hide()"
-					update="tarefaDataTable editarTarefaPanelGrid concluirDialog"
+					update="tarefaDataTable editarTarefaPanelGrid"
 					process="@this">
 					<p:resetInput target="editarTarefaDialog" />
 				</p:commandButton>
@@ -214,8 +217,7 @@
 					<p:commandButton value="Editar Tarefa"
 						action="#{consultaTarefasBean.editar}"
 						oncomplete="if (!args.validationFailed) PF('editarTarefaWidgetVar').hide()"
-						update="editarTarefaPanelGrid cadastroMessages"
-						process="editarTarefaDialog" />
+						update="editarTarefaPanelGrid" process="editarTarefaDialog" />
 
 				</h:panelGrid>
 
@@ -223,8 +225,7 @@
 
 
 
-
-
 		</h:form>
+
 	</ui:define>
 </ui:composition>
