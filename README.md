@@ -29,9 +29,9 @@ Foram usadas algumas dependências para a aplicação:
  
  ## Itens implementados:
  
-a) Criar uma aplicação Java Web utilizando JavaServer Faces (JSF) 
+a) Criar uma aplicação Java Web utilizando JavaServer Faces (JSF) <br />
 b) Utilizar persistência em um banco de dados PostgreSQL. <br />
-c) Utilizar JPA \n
+c) Utilizar JPA 
 
 ## Para execução:
 - Recomendo o uso da IDE Eclipse
