@@ -188,7 +188,7 @@ public class ConsultaTarefasBean implements Serializable {
 		EntityManager em = JpaUtil.getEntityManager();
 		TarefaRepository tr = new TarefaRepository(em);
 
-		tarefa = tr.findById(id);
+		tarefa = tr.findById(7l);
 		em.close();
 		id = null;
 		}
