@@ -42,7 +42,10 @@ public class ConsultaTarefasBean implements Serializable {
 	}
 
 	public Tarefa getTarefa() {
-		return tarefa;
+		 if (tarefa == null) {
+		      tarefa = new Tarefa();
+		   }
+		   return tarefa;
 	}
 
 	public void setTarefa(Tarefa tarefa) {
@@ -56,13 +59,13 @@ public class ConsultaTarefasBean implements Serializable {
 	public void findAll() {
 
 		tarefas = cadastroTarefas.findAll();
-		//tarefas.removeIf(tarefa -> tarefa.getConcluido() == true);
+		tarefas.removeIf(tarefa -> tarefa.getConcluido() == true);
 
 	}
 
 	public void findByName() {
 		tarefas = cadastroTarefas.findByName(termoPesquisa);
-		//tarefas.removeIf(tarefa -> tarefa.getConcluido() == true);
+		tarefas.removeIf(tarefa -> tarefa.getConcluido() == true);
 
 	}
 
