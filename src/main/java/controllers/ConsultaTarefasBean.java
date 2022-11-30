@@ -4,27 +4,24 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
-import javax.faces.context.FacesContext;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.primefaces.context.RequestContext;
 
 import entities.Tarefa;
 import entities.enums.Prioridade;
-import repositories.TarefaRepository;
 import service.CadastroTarefas;
 import service.NegocioException;
-import util.JpaUtil;
 
-@ManagedBean
-@ViewScoped
+@Named
+@javax.faces.view.ViewScoped
 public class ConsultaTarefasBean implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+
+	@Inject
+	private CadastroTarefas cadastroTarefas;
 
 	private List<Tarefa> tarefas;
 
@@ -32,10 +29,6 @@ public class ConsultaTarefasBean implements Serializable {
 
 	private Tarefa tarefa = new Tarefa();
 
-	private Tarefa aux = new Tarefa();
-
-	private Long id;
-	
 	public List<Tarefa> getTarefas() {
 		return tarefas;
 	}
@@ -60,112 +53,41 @@ public class ConsultaTarefasBean implements Serializable {
 		return Prioridade.values();
 	}
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public void setAux(Tarefa aux) {
-		this.aux = aux;
-	}
-
-	public Tarefa getAux() {
-		return aux;
-	}
-
 	public void findAll() {
-		EntityManager em = JpaUtil.getEntityManager();
-		TarefaRepository tr = new TarefaRepository(em);
 
-		tarefas = tr.findAll();
-		em.close();
+		tarefas = cadastroTarefas.findAll();
+		//tarefas.removeIf(tarefa -> tarefa.getConcluido() == true);
+
 	}
 
 	public void findByName() {
-		EntityManager em = JpaUtil.getEntityManager();
-		TarefaRepository tr = new TarefaRepository(em);
+		tarefas = cadastroTarefas.findByName(termoPesquisa);
+		//tarefas.removeIf(tarefa -> tarefa.getConcluido() == true);
 
-		tarefas = tr.findByName(termoPesquisa);
-		em.close();
 	}
 
-	public void salvar() {
-		EntityManager em = JpaUtil.getEntityManager();
-		EntityTransaction et = em.getTransaction();
-		FacesContext context = FacesContext.getCurrentInstance();
-
-		try {
-			et.begin();
-
-			CadastroTarefas cadastroTarefas = new CadastroTarefas(new TarefaRepository(em));
-
-			cadastroTarefas.salvar(tarefa);
-
-			tarefa = new Tarefa();
-			context.addMessage(null, new FacesMessage("Cadastro salvo com sucesso!"));
-
-			et.commit();
-		} catch (NegocioException e) {
-			et.rollback();
-
-			FacesMessage message = new FacesMessage(e.getMessage());
-			message.setSeverity(FacesMessage.SEVERITY_ERROR);
-			context.addMessage(null, message);
-		} finally {
-			em.close();
-		}
+	public void salvar() throws NegocioException {
+		
+		cadastroTarefas.salvar(tarefa);
+		tarefa = new Tarefa();
+		
 		atualizarRegistros();
 		RequestContext.getCurrentInstance().update(Arrays.asList("frm:tarefaDataTable"));
 	}
 
 	public void excluir() {
-		EntityManager em = JpaUtil.getEntityManager();
-		EntityTransaction et = em.getTransaction();
-		FacesContext context = FacesContext.getCurrentInstance();
-
-		try {
-
-			et.begin();
-			CadastroTarefas cadastroTarefas = new CadastroTarefas(new TarefaRepository(em));
-			System.out.println("1");
-			cadastroTarefas.excluir(id);
-			System.out.println("2");
-
-			context.addMessage(null, new FacesMessage("Cadastro excluído com sucesso!"));
-
-			et.commit();
-		} finally {
-
-			id = null;
-			if (em != null)
-				em.close();
-		}
+		cadastroTarefas.excluir(tarefa.getId());
+		
+		tarefa = new Tarefa();
 
 		atualizarRegistros();
 		RequestContext.getCurrentInstance().update(Arrays.asList("frm:tarefaDataTable"));
 	}
 
 	public void concluir() {
-		EntityManager em = JpaUtil.getEntityManager();
-		EntityTransaction et = em.getTransaction();
-		FacesContext context = FacesContext.getCurrentInstance();
+		cadastroTarefas.concluir(tarefa.getId());
 
-		et.begin();
-
-		CadastroTarefas cadastroTarefas = new CadastroTarefas(new TarefaRepository(em));
-		System.out.println(id);
-		cadastroTarefas.concluir(id);
-		
-		id = null;
-
-		context.addMessage(null, new FacesMessage("Tarefa concluída com sucesso!"));
-
-		et.commit();
-		em.close();
-
+		tarefa = new Tarefa();
 		atualizarRegistros();
 		RequestContext.getCurrentInstance().update(Arrays.asList("frm:tarefaDataTable"));
 	}
@@ -185,36 +107,25 @@ public class ConsultaTarefasBean implements Serializable {
 
 	public void prepararEdicao() {
 		System.out.println("preparaEdicao");
-		EntityManager em = JpaUtil.getEntityManager();
-		TarefaRepository tr = new TarefaRepository(em);
 
-		tarefa = tr.findById(7l);
-		em.close();
-		id = null;
-		}
+		tarefa = cadastroTarefas.findById(tarefa.getId());
+	}
 
 	public void editar() {
+
+		cadastroTarefas.editar(tarefa);
 		
-		EntityManager em = JpaUtil.getEntityManager();
-		EntityTransaction et = em.getTransaction();
-		FacesContext context = FacesContext.getCurrentInstance();
-
-		try {
-			et.begin();
-
-			CadastroTarefas cadastroTarefas = new CadastroTarefas(new TarefaRepository(em));
-			
-			cadastroTarefas.editar(tarefa);
-
-			aux = new Tarefa();
-			tarefa = new Tarefa();
-			context.addMessage(null, new FacesMessage("Cadastro salvo com sucesso!"));
-
-			et.commit();
-		} finally {
-			em.close();
-		}
+		tarefa = new Tarefa();
 		atualizarRegistros();
 		RequestContext.getCurrentInstance().update(Arrays.asList("frm:tarefaDataTable"));
+	}
+
+	public boolean isTarefaSelecionada() {
+		return tarefa != null && tarefa.getId() != null;
+	}
+	
+	public void preparaNovaTarefa() {
+		System.out.println("preparaNovaTarefa");
+		tarefa = new Tarefa();
 	}
 }

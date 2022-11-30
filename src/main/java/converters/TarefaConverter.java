@@ -4,24 +4,26 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.persistence.EntityManager;
+import javax.inject.Inject;
 
 import entities.Tarefa;
 import repositories.TarefaRepository;
-import util.JpaUtil;
 
 @FacesConverter(forClass = Tarefa.class)
 public class TarefaConverter implements Converter {
 
+	
+	@Inject
+	TarefaRepository repository;
+	
 	@Override
 	public Object getAsObject(FacesContext context, UIComponent component, String value) {
 		Tarefa retorno = null;
-		EntityManager em = JpaUtil.getEntityManager();
+		
 		
 		try {
 			
-			if (value != null && !"".equals(value)) {
-				TarefaRepository repository = new TarefaRepository(em);
+			if (value != null && !"".equals(value)) {				
 				
 				Long id = Long.valueOf(value);
 				retorno = new Tarefa();
@@ -35,7 +37,7 @@ public class TarefaConverter implements Converter {
 				}
 			return retorno;
 		}finally {
-			em.close();
+			
 		}
 	}
 

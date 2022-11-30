@@ -3,6 +3,7 @@ package repositories;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
@@ -12,11 +13,10 @@ public class TarefaRepository implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
+	@Inject
 	private EntityManager em;
-
-	public TarefaRepository(EntityManager em) {
-		this.em = em;
-	}
+	
+	public TarefaRepository() {}
 	
 	public List<Tarefa> findAll(){
 		TypedQuery<Tarefa> query = em.createQuery("from Tarefa", Tarefa.class);
@@ -25,16 +25,33 @@ public class TarefaRepository implements Serializable {
 	
 	public Tarefa findById(Long id) {
 		System.out.println("6");
-		System.out.println(em.find(Tarefa.class, id));
+		System.out.println(em.find(Tarefa.class, id) + "id");
 		return em.find(Tarefa.class, id);	
 	}
 	
 	public void insert(Tarefa tarefa) {
-		em.persist(tarefa);
+		
+		//FacesContext context = FacesContext.getCurrentInstance();
+		/*try {
+			em.getTransaction().begin();
+			em.persist(tarefa);		
+			em.getTransaction().commit();
+		} catch (Exception e) {
+			em.getTransaction().rollback();
+
+			FacesMessage message = new FacesMessage(e.getMessage());
+			message.setSeverity(FacesMessage.SEVERITY_ERROR);
+			context.addMessage(null, message);
+		}finally {
+			
+		}*/
+		em.persist(tarefa);	
+		
 	}
 	
-	public void delete(Tarefa tarefa) {
+	public void delete(Tarefa tarefa) {		
 		em.remove(tarefa);
+		
 	}
 	
 	public Tarefa update(Tarefa tarefa) {
@@ -45,11 +62,11 @@ public class TarefaRepository implements Serializable {
 		TypedQuery<Tarefa> query = em.createQuery("from Tarefa where titulo like :titulo ", Tarefa.class);
 		
 		query.setParameter("titulo", termoPesquisa + "%");
+		
 		return query.getResultList();
 	}
 	
 	public void concluir(Tarefa tarefa) {
-		tarefa = findById(tarefa.getId());
 		tarefa.setConcluido(true);
 		em.merge(tarefa);
 	}

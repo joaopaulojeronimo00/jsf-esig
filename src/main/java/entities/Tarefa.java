@@ -44,6 +44,20 @@ public class Tarefa implements Serializable {
 	private Date deadline;
 	
 	private Boolean concluido = false;
+	
+	public Tarefa() {}
+
+	public Tarefa(Long id, String titulo, String descricao, String responsavel, Prioridade prioridade, Date deadline,
+			Boolean concluido) {
+		super();
+		this.id = id;
+		this.titulo = titulo;
+		this.descricao = descricao;
+		this.responsavel = responsavel;
+		this.prioridade = prioridade;
+		this.deadline = deadline;
+		this.concluido = concluido;
+	}
 
 	public Long getId() {
 		return id;
